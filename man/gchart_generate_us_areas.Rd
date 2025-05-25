@@ -4,10 +4,22 @@
 \alias{gchart_generate_us_areas}
 \title{Generate Google Charts spatial data for US areas}
 \usage{
-gchart_generate_us_areas()
+gchart_generate_us_areas(areas = 1:1000L, limit = 1000)
+}
+\arguments{
+\item{areas}{Area codes to get. Should be integers.}
+
+\item{limit}{Maximum number of areas to look for.}
 }
 \description{
 This function queries Google Charts resources to identify the US geographic
 areas used in services like Google Trends, and uses geographic data from the
 US Census Bureau to provide those areas with subdivisions at the county level.
+}
+\examples{
+
+library(package = "gchartsmap")
+
+gchartsmap::gchart_generate_us_areas(500L)
+
 }

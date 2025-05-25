@@ -26,3 +26,16 @@ cache path that you already have in your \code{.Renviron} file.}
 Ensures that the directory exists and sets the environment
     variable for access.
 }
+\examples{
+
+library(package = "gchartsmap")
+
+# set the cache path to your system's cache path
+gchartsmap::gchart_set_cache()
+
+\dontrun{
+# save the cache path in your home .Renviron file
+gchartsmap::gchart_set_cache(install = TRUE)
+}
+
+}

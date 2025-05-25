@@ -141,7 +141,40 @@ test_that("processes available areas", {
 
 
 
+#------------------------------------------------------------------------------*
+# test automation ----
+#------------------------------------------------------------------------------*
 
+test_that("automated processing expects integers", {
+  expect_error(
+    gchart_generate_us_areas(500),
+    regexp = "integer"
+  )
+})
+
+
+test_that("automated processing expects at least one area for the request", {
+  expect_error(
+    gchart_generate_us_areas(integer(0)),
+    regexp = "at least"
+  )
+})
+
+
+test_that("automated processing respects limit", {
+  expect_error(
+    gchart_generate_us_areas(500L, limit = 0),
+    regexp = "fetch more than"
+  )
+})
+
+
+test_that("automated processing requested areas", {
+  expect_equal(
+    class(gchart_generate_us_areas(areas = 500L))[1],
+    "sf"
+  )
+})
 
 
 unlink(file.path(tmpdir, "us-areas", "500.js"))

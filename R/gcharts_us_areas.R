@@ -3,10 +3,32 @@
 #' This function queries Google Charts resources to identify the US geographic
 #' areas used in services like Google Trends, and uses geographic data from the
 #' US Census Bureau to provide those areas with subdivisions at the county level.
+#' @param areas Area codes to get. Should be integers.
+#' @param limit Maximum number of areas to look for.
+#'
+#' @examples
+#'
+#' library(package = "gchartsmap")
+#'
+#' gchartsmap::gchart_generate_us_areas(500L)
+#'
 #' @export
 gchart_generate_us_areas <- function(
+    areas = 1:1000L,
+    limit = 1000
 ){
-  gchart_get_us_areas(1:1000)
+  # areas should be integers
+  if(!is.integer(areas)) stop("Provide area codes as integers.")
+
+  # at least one area
+  if(length(areas) < 1) stop("Provide at least one area code.")
+
+  # Caution if too many areas are requested
+  if(length(areas) > limit){
+    stop("Can't fetch more than ", limit, " areas!")
+  }
+
+  gchart_get_us_areas(areas)
   gchart_us_areas <- gchart_available_areas() |>
     names() |>
     as.integer() |>
@@ -148,7 +170,7 @@ gchart_process_us_areas <- function(
   # get all data
   area_files <- available[areas]
   content <- suppressWarnings(lapply(area_files, readLines))
-  content <- content[!grepl("error", content[1])]
+  content <- content[!grepl("error", content)]
 
   # extract data from JSON
   area_data <- content |>

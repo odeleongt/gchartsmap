@@ -8,6 +8,19 @@
 #' @param overwrite If this is set to TRUE, it will overwrite an existing
 #' cache path that you already have in your \code{.Renviron} file.
 #' @param home Path for the \code{.Renviron} file. Defaults to "HOME".
+#'
+#' @examples
+#'
+#' library(package = "gchartsmap")
+#'
+#' # set the cache path to your system's cache path
+#' gchartsmap::gchart_set_cache()
+#'
+#' \dontrun{
+#' # save the cache path in your home .Renviron file
+#' gchartsmap::gchart_set_cache(install = TRUE)
+#' }
+#'
 #' @export
 gchart_set_cache <- function(
     path = tools::R_user_dir(package = "gchartsmap", which = "cache"),
@@ -188,6 +201,17 @@ gchart_remove_cache_path <- function(
 #' Get the cache path
 #' @description Get the saved cache path
 #' @param path Path to use as cache
+#'
+#' @examples
+#'
+#' library(package = "gchartsmap")
+#'
+#' # set the cache path to your system's cache path
+#' gchartsmap::gchart_set_cache()
+#'
+#' # check the set cache
+#' gchartsmap::gchart_get_cache_path()
+#'
 #' @export
 gchart_get_cache_path <- function(
     path = NULL

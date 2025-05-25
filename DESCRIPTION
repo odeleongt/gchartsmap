@@ -7,13 +7,13 @@ Authors@R: c(
       given = "Oscar",
       family = "de Leon",
       email = "odeleon@emory.edu",
-      role = c("aut", "cre"),
+      role = c("aut", "cre", "cph"),
       comment = c(ORCID = "0000-0003-1344-4412")
       )
     )
-Description: This package connects to the Google Charts geographic data
-    resources, allowing the user to download contents to use as a reference for
-    related services like Google Trends.
+Description: Connects to the Google Charts geographic data resources, allowing
+    the user to download contents to use as a reference for related services
+    like Google Trends.
 License: GPL-3
 URL: https://github.com/odeleongt/gchartsmap
 Imports:
@@ -28,3 +28,4 @@ Depends: R (>= 4.1.0)
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
+BugReports: https://github.com/odeleongt/gchartsmap/issues

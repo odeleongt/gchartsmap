@@ -12,3 +12,14 @@ gchart_get_cache_path(path = NULL)
 \description{
 Get the saved cache path
 }
+\examples{
+
+library(package = "gchartsmap")
+
+# set the cache path to your system's cache path
+gchartsmap::gchart_set_cache()
+
+# check the set cache
+gchartsmap::gchart_get_cache_path()
+
+}
