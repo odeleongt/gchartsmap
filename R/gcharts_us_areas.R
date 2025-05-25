@@ -10,6 +10,10 @@
 #'
 #' library(package = "gchartsmap")
 #'
+#' # set the cache path to your system's cache path
+#' gchartsmap::gchart_set_cache()
+#'
+#' # GET and process area 500
 #' gchartsmap::gchart_generate_us_areas(500L)
 #'
 #' @export

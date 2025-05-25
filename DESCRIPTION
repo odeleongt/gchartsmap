@@ -1,7 +1,7 @@
 Package: gchartsmap
 Type: Package
 Title: Access Google Charts Map Data
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(
     person(
       given = "Oscar",

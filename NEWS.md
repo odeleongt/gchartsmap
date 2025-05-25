@@ -1,3 +1,8 @@
+# gchartsmap 0.1.1
+
+- Fix errors in examples.
+
+
 # gchartsmap 0.1.0
 
 * Initial CRAN submission.
