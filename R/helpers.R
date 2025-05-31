@@ -9,6 +9,11 @@
 #' cache path that you already have in your \code{.Renviron} file.
 #' @param home Path for the \code{.Renviron} file. Defaults to "HOME".
 #'
+#' @returns Sets and returns the path to the cache where downloaded data will be
+#' stored. Is used for the side effect of setting the `R_GOOGLE_CHART_CACHE`
+#' environment variable, and can store the path in `.Renviron` for use in
+#' future R sessions if requested.
+#'
 #' @examples
 #'
 #' library(package = "gchartsmap")
@@ -16,7 +21,7 @@
 #' # set the cache path to your system's cache path
 #' gchartsmap::gchart_set_cache()
 #'
-#' \dontrun{
+#' \donttest{
 #' # save the cache path in your home .Renviron file
 #' gchartsmap::gchart_set_cache(install = TRUE)
 #' }
@@ -54,7 +59,7 @@ gchart_set_cache <- function(
         gchart_remove_cache_path(remove = TRUE, path = path)
       } else {
         if(any(grepl("R_GOOGLE_CHART_CACHE", oldenv))){
-          stop(
+          warning(
             paste(
               "A R_GOOGLE_CHART_CACHE path already exists.",
               "You can overwrite it with the argument overwrite=TRUE"
@@ -201,6 +206,11 @@ gchart_remove_cache_path <- function(
 #' Get the cache path
 #' @description Get the saved cache path
 #' @param path Path to use as cache
+#'
+#' @returns Returns the path to the local cache as set in the
+#' `R_GOOGLE_CHART_CACHE` environment variable. If that is not set, gets the
+#' system's default cache path for the package as provided by
+#' `tools::R_user_dir()`.
 #'
 #' @examples
 #'

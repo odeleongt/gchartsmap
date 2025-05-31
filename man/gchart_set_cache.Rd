@@ -22,6 +22,12 @@ cache path that you already have in your \code{.Renviron} file.}
 
 \item{home}{Path for the \code{.Renviron} file. Defaults to "HOME".}
 }
+\value{
+Sets and returns the path to the cache where downloaded data will be
+stored. Is used for the side effect of setting the `R_GOOGLE_CHART_CACHE`
+environment variable, and can store the path in `.Renviron` for use in
+future R sessions if requested.
+}
 \description{
 Ensures that the directory exists and sets the environment
     variable for access.
@@ -33,7 +39,7 @@ library(package = "gchartsmap")
 # set the cache path to your system's cache path
 gchartsmap::gchart_set_cache()
 
-\dontrun{
+\donttest{
 # save the cache path in your home .Renviron file
 gchartsmap::gchart_set_cache(install = TRUE)
 }

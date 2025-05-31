@@ -9,6 +9,12 @@ gchart_get_cache_path(path = NULL)
 \arguments{
 \item{path}{Path to use as cache}
 }
+\value{
+Returns the path to the local cache as set in the
+`R_GOOGLE_CHART_CACHE` environment variable. If that is not set, gets the
+system's default cache path for the package as provided by
+`tools::R_user_dir()`.
+}
 \description{
 Get the saved cache path
 }

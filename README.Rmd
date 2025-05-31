@@ -18,8 +18,8 @@ knitr::opts_chunk$set(
 
 
 
-# gchartsmap: Access Google Charts Map Data
+# gchartsmap: Access 'Google Charts' Map Data
 
-This package connects to the Google Charts geographic data resources, allowing
+This package connects to the 'Google Charts' geographic data resources, allowing
 the user to download contents to use as a reference for related services like
-Google Trends.
+'Google Trends'.

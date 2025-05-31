@@ -71,8 +71,8 @@ test_that("installs the path", {
 })
 
 
-test_that("error if path already installed", {
-  expect_error(
+test_that("warning if path already installed", {
+  expect_warning(
     {
       suppressMessages(
         gchart_set_cache(path = tmpdir, install = TRUE, home = tmpdir)

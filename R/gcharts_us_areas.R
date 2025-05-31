@@ -1,10 +1,17 @@
 #' Generate Google Charts spatial data for US areas
 #' @description
-#' This function queries Google Charts resources to identify the US geographic
+#' This function queries 'Google Charts' resources to identify the US geographic
 #' areas used in services like Google Trends, and uses geographic data from the
 #' US Census Bureau to provide those areas with subdivisions at the county level.
 #' @param areas Area codes to get. Should be integers.
 #' @param limit Maximum number of areas to look for.
+#'
+#' @returns Returns a simple features `data.frame` with class `sf`, representing
+#' the spatial data for all areas with a valid id between 1 and a 1000 from the
+#' Google Charts servers, using the WGS84 (epsg = 4326) coordinate reference
+#' system.
+#' You need to first run `gchart_set_cache()` so the package knows where to
+#' store the downloaded data.
 #'
 #' @examples
 #'
@@ -36,6 +43,7 @@ gchart_generate_us_areas <- function(
   gchart_us_areas <- gchart_available_areas() |>
     names() |>
     as.integer() |>
+    intersect(areas) |>
     gchart_process_us_areas()
 
   return(gchart_us_areas)
