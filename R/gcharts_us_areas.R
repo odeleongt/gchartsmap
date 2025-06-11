@@ -18,10 +18,15 @@
 #' library(package = "gchartsmap")
 #'
 #' # set the cache path to your system's cache path
-#' gchartsmap::gchart_set_cache()
+#' gchartsmap::gchart_set_cache(path = tempdir())
 #'
 #' # GET and process area 500
 #' gchartsmap::gchart_generate_us_areas(500L)
+#'
+#' # clean up
+#' list.files(
+#'   tempdir(), all.files = TRUE, full.names = TRUE, recursive = TRUE
+#' )
 #'
 #' @export
 gchart_generate_us_areas <- function(

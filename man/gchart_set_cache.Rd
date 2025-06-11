@@ -36,12 +36,22 @@ Ensures that the directory exists and sets the environment
 
 library(package = "gchartsmap")
 
-# set the cache path to your system's cache path
-gchartsmap::gchart_set_cache()
+# set the cache path to a temp folder
+gchartsmap::gchart_set_cache(path = tempdir())
 
 \donttest{
-# save the cache path in your home .Renviron file
-gchartsmap::gchart_set_cache(install = TRUE)
+# save the cache path in a temporary folder
+# if you want to save the cache path in your default .Renviron,
+# use the default for path
+gchartsmap::gchart_set_cache(
+  install = TRUE, path = tempdir(), overwrite = TRUE, home = tempdir()
+)
+
+# clean up
+list.files(
+  tempdir(), all.files = TRUE, full.names = TRUE, pattern = ".Renv"
+) |>
+ unlink()
 }
 
 }

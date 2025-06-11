@@ -22,8 +22,8 @@ Get the saved cache path
 
 library(package = "gchartsmap")
 
-# set the cache path to your system's cache path
-gchartsmap::gchart_set_cache()
+# set the cache path to a temp folder
+gchartsmap::gchart_set_cache(path = tempdir())
 
 # check the set cache
 gchartsmap::gchart_get_cache_path()

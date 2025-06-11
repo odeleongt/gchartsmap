@@ -1,3 +1,8 @@
+# gchartsmap 0.1.3
+
+- Fix one CRAN submission NOTE.
+- Examples no longer generate files in user folders.
+
 # gchartsmap 0.1.2
 
 - Only generate areas requested in the function call.
