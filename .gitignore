@@ -1,4 +1,8 @@
+*.js
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
+gchartsmap.Rcheck/
+gchartsmap*.tar.gz
+gchartsmap*.tgz

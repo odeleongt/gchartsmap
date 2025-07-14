@@ -5,3 +5,6 @@
 ^README-.*\.png$
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$
+^gchartsmap\.Rcheck$
+^gchartsmap.*\.tar\.gz$
+^gchartsmap.*\.tgz$
