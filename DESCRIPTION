@@ -11,8 +11,8 @@ Authors@R: c(
       comment = c(ORCID = "0000-0003-1344-4412")
       )
     )
-Description: Connects to the 'Google Charts' geographic data resources hosted at
-    <https://www.gstatic.com/charts/geochart/10/mapfiles/US-500_METROS.js>, allowing
+Description: Connects to the 'Google Charts' geographic data resources described in
+    <https://developers.google.com/chart/interactive/docs/gallery/geochart>, allowing
     the user to download contents to use as a reference for related services
     like 'Google Trends'.
 License: GPL-3
