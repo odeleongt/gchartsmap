@@ -4,10 +4,15 @@
 \alias{gchart_available_areas}
 \title{Get available areas}
 \usage{
-gchart_available_areas(cache = gchart_get_cache_path())
+gchart_available_areas(
+  type = c("countries", "us-areas"),
+  cache = gchart_get_cache_path()
+)
 }
 \arguments{
-\item{cache}{Path where the downloaded data is stored}
+\item{type}{Type of geo-resource. Defaults to countries.}
+
+\item{cache}{Path where the downloaded data is stored.}
 }
 \description{
 Get a list of areas that have been downloaded
