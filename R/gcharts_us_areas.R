@@ -49,7 +49,7 @@ gchart_generate_us_areas <- function(
     names() |>
     as.integer() |>
     intersect(areas) |>
-    gchart_process_us_areas(type = "us-areas")
+    gchart_process_areas(type = "us-areas")
 
   return(gchart_us_areas)
 }

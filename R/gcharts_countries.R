@@ -12,7 +12,7 @@
 #' @importFrom httr GET
 #' @importFrom httr content
 #' @export
-gcharts_countries <- function(
+gchart_countries <- function(
     url = "https://developers.google.com/chart/interactive/docs/gallery/geochart",
     cache = FALSE,
     path = NULL,
