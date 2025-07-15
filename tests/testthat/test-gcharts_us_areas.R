@@ -71,8 +71,8 @@ test_that("succeeds with existing file", {
 
 test_that("fails with incorrect area", {
   gchart_get_us_areas(-1L)
-  path <- gchart_available_areas()
-  content <- readLines(path, n = 1, warn = FALSE)
+  path <- gchart_available_areas(type = "us-areas")
+  content <- readLines(path[1], n = 1, warn = FALSE)
   expect_equal(
     content,
     "error: 404",
@@ -94,7 +94,7 @@ gchart_get_us_areas(500L)
 
 test_that("listing available areas needs cache", {
   expect_error(
-    gchart_available_areas(cache = ""),
+    gchart_available_areas(cache = "", type = "us-areas"),
     regexp = "Cache should be used"
   )
 })
@@ -102,7 +102,7 @@ test_that("listing available areas needs cache", {
 
 test_that("processing needs cache", {
   expect_error(
-    gchart_process_us_areas(1L, cache = ""),
+    gchart_process_areas(1L, cache = ""),
     regexp = "Cache should be used"
   )
 })
@@ -110,7 +110,7 @@ test_that("processing needs cache", {
 
 test_that("processing expects integers", {
   expect_error(
-    gchart_process_us_areas(500),
+    gchart_process_areas(500, type = "us-areas"),
     regexp = "integer"
   )
 })
@@ -118,7 +118,7 @@ test_that("processing expects integers", {
 
 test_that("processing expects at least one area for the request", {
   expect_error(
-    gchart_process_us_areas(integer(0)),
+    gchart_process_areas(integer(0)),
     regexp = "at least"
   )
 })
@@ -126,7 +126,7 @@ test_that("processing expects at least one area for the request", {
 
 test_that("missing areas requested for processing", {
   expect_error(
-    gchart_process_us_areas(-1L),
+    gchart_process_areas(-1L),
     regexp = "requested areas should be downloaded"
   )
 })
@@ -134,7 +134,7 @@ test_that("missing areas requested for processing", {
 
 test_that("processes available areas", {
   expect_equal(
-    class(gchart_process_us_areas(areas = 500L))[1],
+    class(gchart_process_areas(areas = 500L, type = "us-areas"))[1],
     "sf"
   )
 })

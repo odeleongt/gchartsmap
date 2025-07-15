@@ -7,6 +7,7 @@
 #' Use country codes from \code{gchartsmap::gchart_countries()}
 #' @param server Google geochart server to access.
 #' @param cache Path to store downloaded data.
+#' @param verbose Whether to show messages during processing.
 #'
 #' @returns Returns a simple features `data.frame` with class `sf`, representing
 #' the spatial data for all countries from the Google Charts servers,
@@ -29,12 +30,12 @@
 #'   tempdir(), all.files = TRUE, full.names = TRUE, recursive = TRUE
 #' )
 #'
-#' @importFrom utils download.file
 #' @export
 gchart_generate_countries <- function(
     countries = "all",
     server = "https://www.gstatic.com/charts/geochart/10/mapfiles/",
-    cache = gchart_get_cache_path()
+    cache = gchart_get_cache_path(),
+    verbose = TRUE
 ){
 
   if(identical(countries, "all")){
@@ -44,16 +45,20 @@ gchart_generate_countries <- function(
     country_codes <- data.frame(code = countries)
   }
 
+  if(verbose) message("Downloading country data... ", appendLF = FALSE)
   gchart_get_countries(
     countries = countries,
     server = server,
     cache = cache
   )
+  if(verbose) message("Done.")
 
+  if(verbose) message("Processing geographic data... ", appendLF = FALSE)
   country_geo_data <- gchart_process_areas(
     areas = countries,
     type = "countries"
   )
+  if(verbose) message("Done.")
 
   return(country_geo_data)
 }
@@ -61,16 +66,27 @@ gchart_generate_countries <- function(
 
 
 
-
+#' Get Google Charts data for countries
+#' @description
+#' Access the Google Charts geochart data for countries
+#'
+#' @details
+#' The function invisibly returns the file path for successful requests or
+#' the response status code for failed requests, in a character vector with the
+#' country code for each element.
+#'
+#' @param countries Country codes to get.
+#' @param server Google geochart server to access.
+#' @param cache Path to store downloaded data.
+#' @importFrom httr GET
+#' @importFrom httr content
 gchart_get_countries <- function(
     countries = "all",
     server = "https://www.gstatic.com/charts/geochart/10/mapfiles/",
     cache = gchart_get_cache_path()
 ){
   if(identical(countries, "all")){
-    country_codes <- gchart_countries()
-  } else {
-    country_codes <- data.frame(code = countries)
+    countries <- gchart_countries$code
   }
 
 
@@ -86,36 +102,46 @@ gchart_get_countries <- function(
 
 
   # default file name for most countries in the server
-  country_codes$file <- paste0(country_codes$code, "_PROVINCES.js")
+  files <- paste0(countries, "_PROVINCES.js")
 
   # different file name for some countries
-  country_codes$file[country_codes$code %in% different_file] <-
+  files[countries %in% different_file] <-
     paste0(
-      country_codes$code[country_codes$code %in% different_file],
+      countries[countries %in% different_file],
       "_COUNTRIES.js"
     )
 
+
+  # track request results
+  results <- character(length(countries))
+  names(results) <- countries
+
+  # use the folder for country files
+  country_path <- file.path(cache, "countries")
+  dir.create(country_path, recursive = TRUE, showWarnings = FALSE)
+
+
   mapply(
-    country_codes$code, country_codes$file,
+    countries, files,
     FUN = function(code, file){
-      local_file <- paste0(cache, "/countries/", code, ".js")
-      if(!file.exists(local_file)){
-        tryCatch(
-          download.file(
-            url = paste0(server, file),
-            destfile = local_file
-          ),
-          error = function(e) "Not found"
-        )
+      local_file <- file.path(country_path, paste0(code, ".js"))
+      if(file.exists(local_file)){
+        results[code] <<- local_file
+      } else {
+        response <- httr::GET(paste0(server, file))
+
+        if(response$status_code == 200){
+          results[code] <<- local_file
+          content <- response |>
+            httr::content(as = "text", encoding = "UTF-8") |>
+            cat(file = local_file)
+        } else {
+          cat("error:", response$status_code, file = local_file)
+          results[code] <<- response$status_code
+        }
       }
     }
   )
 
-  country_codes$found <- country_codes$code %in% gsub(
-    "^([^.]+).+",
-    "\\1",
-    list.files("data/countries")
-  )
-
-  return(country_codes)
+  return(invisible(results))
 }

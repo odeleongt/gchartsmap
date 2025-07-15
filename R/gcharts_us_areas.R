@@ -170,6 +170,10 @@ gchart_process_areas <- function(
   # only one geo-resource type
   type <- type[1]
 
+  # us-areas should be integers
+  if(type == "us-areas" & !is.integer(areas))
+    stop("Provide area codes as integers.")
+
   # get all available areas
   available <- gchart_available_areas(type = type)
 
