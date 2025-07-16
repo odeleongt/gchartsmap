@@ -38,16 +38,28 @@ gchart_generate_countries <- function(
     verbose = TRUE
 ){
 
+  country_codes <- gchart_countries()
+
   if(identical(countries, "all")){
-    country_codes <- gchart_countries()
     countries <- country_codes$code
   } else {
-    country_codes <- data.frame(code = countries)
+    country_codes <- country_codes |>
+      subset(
+        subset = code %in% countries
+      )
   }
+
+  valid <- countries[countries %in% country_codes$code]
+  invalid <- setdiff(countries, valid)
+
+  if(length(invalid) > 0) message("These codes are not valid: ", invalid)
+
+  if(length(valid) == 0) stop("No valid codes were provided.")
+
 
   if(verbose) message("Downloading country data... ", appendLF = FALSE)
   gchart_get_countries(
-    countries = countries,
+    countries = valid,
     server = server,
     cache = cache
   )
@@ -57,7 +69,9 @@ gchart_generate_countries <- function(
   country_geo_data <- gchart_process_areas(
     areas = countries,
     type = "countries"
-  )
+  ) |>
+    merge(country_codes)
+
   if(verbose) message("Done.")
 
   return(country_geo_data)
@@ -154,6 +168,7 @@ gchart_get_countries <- function(
 #' Use the default.
 #' @param cache Path to store downloaded data.
 #' @param format Which format to use for storing the countries table.
+#' @param update Whether to update the table even if it is cached.
 #' @param verbose Whether to show messages during processing.
 #' @details
 #' Extracts the information of countries available in the Google Charts geochart
@@ -167,6 +182,7 @@ gchart_countries <- function(
     server = "https://developers.google.com/chart/interactive/docs/gallery/geochart",
     cache = gchart_get_cache_path(),
     format = c("rds", "rda"),
+    update = FALSE,
     verbose = TRUE
 ){
 
@@ -182,23 +198,23 @@ gchart_countries <- function(
 
   file <- file.path(cache, paste0("countries.", format))
 
-  if(file.exists(file)){
-    message("Reading cached country table.")
+  if(file.exists(file) & !update){
+    if(verbose) message("Reading cached country table.")
     countries <- switch(
       format,
       rds = readRDS(file),
       rda = load(file)
     )
   } else {
-    message("Getting updated country table.")
+    if(verbose) message("Getting updated country table.")
     # get the country information from the Google Charts documentation
     document <- httr::GET(server)
     code <- document$status_code
 
     if(code != 200L) stop("Documentation not found at ", url, "!")
 
-    # manually process html table
-    table_html_text <- document |>
+    # get portion of html containing the countries table
+    table_html_block <- document |>
       # get html content as text
       httr::content(as = "text") |>
       # select the only table with data
@@ -222,11 +238,33 @@ gchart_countries <- function(
         pattern = "</[^>]+>",
         replacement = "",
         x = _
-      ) |>
-      # keep the href attributes
+      )
+
+
+    # location for reference table with coutry names
+    country_tables_ref <- table_html_block |>
       gsub(
-        pattern = "<a href=\"([^\"]+)\"[^>]*>([^,<[:space:]]+)([,<[:space:]])",
-        replacement = "\\2;\\1\\3",
+        pattern = ".+href=\"([^\"]+)\".+",
+        replacement = "\\1",
+        x = _
+      ) |>
+      gsub(
+        pattern = "#.+",
+        replacement = "",
+        x = _
+      )
+
+
+    # manually process html table
+    table_html_text <- table_html_block |>
+      gsub(
+        pattern = "<a.+?>([.A-Za-z0-9][^<]+).+?\n(td:|tr:)",
+        replacement = "\\1\\2",
+        x = _
+      ) |>
+      gsub(
+        pattern = "\n",
+        replacement = "",
         x = _
       ) |>
       gsub(
@@ -275,15 +313,12 @@ gchart_countries <- function(
             do.call(what = rbind, args = _) |>
             as.data.frame()
 
-          names(dfr) <- c("code", "url")
+          names(dfr) <- c("code")
 
           # add regional groupings
           dfr$continent <- row[1]
           dfr$sub_continent <- row[2]
-          dfr <- dfr[, c("continent", "sub_continent", "code", "url")]
-
-          # add tibble classes for tidyverse users
-          class(dfr) <- c("tbl_df", "tbl", class(dfr))
+          dfr <- dfr[, c("continent", "sub_continent", "code")]
 
           return(dfr)
         }
@@ -305,8 +340,123 @@ gchart_countries <- function(
     )
     countries <- subset(countries, subset = ! code %in% deprecated)
 
+
+
+    # get table with country names
+    document <- country_tables_ref |>
+      httr::GET()
+
+    # process table with country names
+    table_html_text <- document |>
+      httr::content(as = "text") |>
+      gsub(
+        pattern = ".+id=\"Officially_assigned_code_elements\">",
+        replacement = "<h3>",
+        x = _
+      ) |>
+      gsub(
+        pattern = "id=\"User-assigned_code_elements.+",
+        replacement = "",
+        x = _
+      ) |>
+      gsub(
+        pattern = ".+?<table[^>]+sortable[^>]+>",
+        replacement = "",
+        x = _
+      ) |>
+      gsub(
+        pattern = "</table>.+",
+        replacement = "",
+        x = _
+      ) |>
+      iconv(to = "ASCII//TRANSLIT//IGNORE") |>
+      # simplify all html tags
+      gsub(
+        pattern = "<(table|tr|td|th)[[:space:]]*[^>]*>[[:space:]]*",
+        replacement = "\\1:",
+        x = _
+      ) |>
+      gsub(
+        pattern = "^.+</th></tr>\ntr:",
+        replacement = "",
+        x = _
+      ) |>
+      gsub(
+        pattern = "td:</td>",
+        replacement = "td:(Empty cell)</td>",
+        x = _
+      ) |>
+      # clean up the href attributes
+      gsub(
+        pattern = "<a.+?>([.A-Za-z0-9][^<]+).+?\n(td:|tr:)",
+        replacement = "\\1\\2",
+        x = _
+      ) |>
+      gsub(
+        pattern = "\n",
+        replacement = "",
+        x = _
+      ) |>
+      gsub(
+        pattern = "</[^>]+>",
+        replacement = "",
+        x = _
+      ) |>
+      gsub(
+        pattern = "<[^>]+>",
+        replacement = "",
+        x = _
+      ) |>
+      gsub(
+        pattern = "[[:space:]]{2,}",
+        replacement = "",
+        x = _
+      ) |>
+      sub(
+        pattern = "^tr:",
+        replacement = "",
+        x = _
+      )
+
+
+
+    # get country names
+    country_names <- table_html_text |>
+      sub(
+        pattern = "^th.+?td:",
+        replacement = "td:",
+        x = _
+      ) |>
+      strsplit(split = "tr:") |>
+      unlist() |>
+      sub(
+        pattern = "^td:",
+        replacement = "",
+        x = _
+      ) |>
+      strsplit(split = "td:") |>
+      lapply(
+        FUN = function(row){
+          row |>
+            t() |>
+            as.data.frame()
+        }
+      ) |>
+      do.call(what = rbind, args = _) |>
+      subset(select= c("V1", "V2")) |>
+      setNames(nm = c("code", "country"))
+
+
+    # add country names
+    countries <- merge(countries, country_names)
+
+    # add tibble classes for tidyverse users
+    class(countries) <- c("tbl_df", "tbl", class(countries))
+
+
     export_fun(countries, file)
   }
 
   return(countries)
 }
+

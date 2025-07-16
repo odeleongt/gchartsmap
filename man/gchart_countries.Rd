@@ -8,6 +8,7 @@ gchart_countries(
   server = "https://developers.google.com/chart/interactive/docs/gallery/geochart",
   cache = gchart_get_cache_path(),
   format = c("rds", "rda"),
+  update = FALSE,
   verbose = TRUE
 )
 }
@@ -18,6 +19,8 @@ Use the default.}
 \item{cache}{Path to store downloaded data.}
 
 \item{format}{Which format to use for storing the countries table.}
+
+\item{update}{Whether to update the table even if it is cached.}
 
 \item{verbose}{Whether to show messages during processing.}
 }
