@@ -1,3 +1,7 @@
+# gchartsmap 1.0.1
+
+- Fix CRAN pre-submission notes
+
 # gchartsmap 1.0.0
 
 - Added features to extract geographic data for all countries in Google Charts
