@@ -38,15 +38,15 @@ gchart_generate_countries <- function(
     verbose = TRUE
 ){
 
-  country_codes <- gchart_countries()
+  country_codes <- gchart_countries(verbose = verbose)
 
   if(identical(countries, "all")){
     countries <- country_codes$code
   } else {
-    country_codes <- country_codes |>
-      subset(
-        subset = code %in% countries
-      )
+    country_codes <- subset(
+      country_codes,
+      subset = country_codes$code %in% countries
+    )
   }
 
   valid <- countries[countries %in% country_codes$code]
@@ -92,15 +92,17 @@ gchart_generate_countries <- function(
 #' @param countries Country codes to get.
 #' @param server Google geochart server to access.
 #' @param cache Path to store downloaded data.
+#' @param verbose Whether to show messages during processing.
 #' @importFrom httr GET
 #' @importFrom httr content
 gchart_get_countries <- function(
     countries = "all",
     server = "https://www.gstatic.com/charts/geochart/10/mapfiles/",
-    cache = gchart_get_cache_path()
+    cache = gchart_get_cache_path(),
+    verbose = FALSE
 ){
   if(identical(countries, "all")){
-    countries <- gchart_countries$code
+    countries <- gchart_countries(verbose = verbose)$code
   }
 
 
@@ -443,8 +445,9 @@ gchart_countries <- function(
         }
       ) |>
       do.call(what = rbind, args = _) |>
-      subset(select= c("V1", "V2")) |>
-      setNames(nm = c("code", "country"))
+      subset(select= c("V1", "V2"))
+
+    names(country_names) <- c("code", "country")
 
 
     # add country names

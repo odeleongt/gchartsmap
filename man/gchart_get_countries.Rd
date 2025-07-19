@@ -7,7 +7,8 @@
 gchart_get_countries(
   countries = "all",
   server = "https://www.gstatic.com/charts/geochart/10/mapfiles/",
-  cache = gchart_get_cache_path()
+  cache = gchart_get_cache_path(),
+  verbose = FALSE
 )
 }
 \arguments{
@@ -16,6 +17,8 @@ gchart_get_countries(
 \item{server}{Google geochart server to access.}
 
 \item{cache}{Path to store downloaded data.}
+
+\item{verbose}{Whether to show messages during processing.}
 }
 \description{
 Access the Google Charts geochart data for countries
