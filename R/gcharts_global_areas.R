@@ -243,7 +243,7 @@ gchart_countries <- function(
       )
 
 
-    # location for reference table with coutry names
+    # location for reference table with country names
     country_tables_ref <- table_html_block |>
       gsub(
         pattern = ".+href=\"([^\"]+)\".+",
@@ -348,8 +348,8 @@ gchart_countries <- function(
     document <- country_tables_ref |>
       httr::GET()
 
-    # process table with country names
-    table_html_text <- document |>
+    # process table with country names and get country names
+    country_names <- document |>
       httr::content(as = "text") |>
       gsub(
         pattern = ".+id=\"Officially_assigned_code_elements\">",
@@ -371,6 +371,12 @@ gchart_countries <- function(
         replacement = "",
         x = _
       ) |>
+      # remove full line comments
+      gsub(
+        pattern = "(^|\n)<!--[^\n]+\n",
+        replacement = "",
+        x = _
+      ) |>
       iconv(to = "ASCII//TRANSLIT//IGNORE") |>
       # simplify all html tags
       gsub(
@@ -388,64 +394,44 @@ gchart_countries <- function(
         replacement = "td:(Empty cell)</td>",
         x = _
       ) |>
-      # clean up the href attributes
+      # separate every table row
       gsub(
-        pattern = "<a.+?>([.A-Za-z0-9][^<]+).+?\n(td:|tr:)",
-        replacement = "\\1\\2",
-        x = _
-      ) |>
-      gsub(
-        pattern = "\n",
-        replacement = "",
-        x = _
-      ) |>
-      gsub(
-        pattern = "</[^>]+>",
-        replacement = "",
-        x = _
-      ) |>
-      gsub(
-        pattern = "<[^>]+>",
-        replacement = "",
-        x = _
-      ) |>
-      gsub(
-        pattern = "[[:space:]]{2,}",
-        replacement = "",
-        x = _
+        # pattern = "(td:[^\n]+)[\n]+([^\n]+</td>)",
+        # replacement = "\\1 \\2",
+        pattern = "(?:td:|\\G(?!^))(?:(?!</td>)[^\n])*\\K\n",
+        replacement = " ",
+        x = _,
+        perl = TRUE
       ) |>
       sub(
-        pattern = "^tr:",
+        pattern = "\n*</tbody>.*",
         replacement = "",
         x = _
-      )
-
-
-
-    # get country names
-    country_names <- table_html_text |>
-      sub(
-        pattern = "^th.+?td:",
-        replacement = "td:",
+      ) |>
+      # ensure each table row is in a new line
+      gsub(
+        pattern = "([^\n])tr:",
+        replacement = "\ntr",
         x = _
       ) |>
-      strsplit(split = "tr:") |>
+      strsplit(split = "\n") |>
       unlist() |>
-      sub(
-        pattern = "^td:",
-        replacement = "",
-        x = _
-      ) |>
-      strsplit(split = "td:") |>
+      # get each link within table rows (first two are countries)
+      strsplit(split = "<a") |>
       lapply(
-        FUN = function(row){
-          row |>
-            t() |>
-            as.data.frame()
-        }
+        `[`,
+        2:3
       ) |>
-      do.call(what = rbind, args = _) |>
-      subset(select= c("V1", "V2"))
+      lapply(
+        gsub,
+        pattern = ".*?>([.A-Za-z0-9][^<]+)<.+",
+        replacement = "\\1"
+      ) |>
+      lapply(
+        t
+      ) |>
+      do.call(what = "rbind", args = _) |>
+      as.data.frame()
 
     names(country_names) <- c("code", "country")
 

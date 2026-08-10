@@ -1,3 +1,7 @@
+# gchartsmap 1.0.2
+
+- Fix issue with processing new format of ISO 3166-1 alpha-2 table
+
 # gchartsmap 1.0.1
 
 - Fix CRAN pre-submission notes

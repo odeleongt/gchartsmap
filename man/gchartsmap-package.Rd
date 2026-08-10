@@ -17,7 +17,12 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Oscar de Leon \email{odeleon@emory.edu} (\href{https://orcid.org/0000-0003-1344-4412}{ORCID}) [copyright holder]
+\strong{Maintainer}: Oscar de Leon \email{odeleon@alumni.emory.edu} (\href{https://orcid.org/0000-0003-1344-4412}{ORCID}) [copyright holder]
+
+Authors:
+\itemize{
+  \item Oscar de Leon \email{odeleon@alumni.emory.edu} (\href{https://orcid.org/0000-0003-1344-4412}{ORCID}) [copyright holder]
+}
 
 }
 \keyword{internal}
